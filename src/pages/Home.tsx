@@ -184,7 +184,7 @@ const Home: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-2">
-              Why Choose CryptoPulse
+              Why Choose Cryptoctabil
             </h2>
             <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Powerful tools and insights to navigate the cryptocurrency markets with confidence
@@ -230,7 +230,7 @@ const Home: React.FC = () => {
               Ready to start your cryptocurrency journey?
             </h2>
             <p className="text-white/80 text-lg mb-8">
-              Join thousands of users who trust CryptoPulse for real-time market insights and portfolio management.
+              Join thousands of users who trust Cryptoctabil for real-time market insights and portfolio management.
             </p>
             <motion.button 
               onClick={() => navigate('/dashboard')}

@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
               <Globe size={20} className="text-white" />
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500">
-              CryptoPulse
+              Cryptoctabil
             </span>
           </NavLink>
           

@@ -92,7 +92,7 @@ const About: React.FC = () => {
       >
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">About CryptoPulse</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">About Cryptoctabil</h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             We're on a mission to make cryptocurrency accessible to everyone through innovative tools and real-time insights.
           </p>
@@ -109,13 +109,13 @@ const About: React.FC = () => {
           <h2 className="text-2xl font-bold mb-6 border-b border-gray-200 dark:border-dark-500 pb-2">Our Story</h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p>
-              CryptoPulse was founded in 2023 by a team of blockchain developers, financial experts, and design specialists who saw the need for a more intuitive and comprehensive cryptocurrency platform.
+              Cryptoctabil was founded in 2023 by a team of blockchain developers, financial experts, and design specialists who saw the need for a more intuitive and comprehensive cryptocurrency platform.
             </p>
             <p>
               We recognized that while cryptocurrency was gaining mainstream attention, the tools available to most users were complex, fragmented, and often intimidating for newcomers. Our goal was to create a unified platform that would provide real-time insights, portfolio management, and educational resources all in one place.
             </p>
             <p>
-              Today, CryptoPulse serves users across the globe, from cryptocurrency beginners to seasoned traders and institutional investors. We're constantly evolving our platform based on user feedback and technological advancements in the blockchain space.
+              Today, Cryptoctabil serves users across the globe, from cryptocurrency beginners to seasoned traders and institutional investors. We're constantly evolving our platform based on user feedback and technological advancements in the blockchain space.
             </p>
           </div>
         </motion.section>
@@ -296,15 +296,15 @@ const About: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <p className="font-medium">General Inquiries</p>
-                    <p className="text-gray-600 dark:text-gray-300">info@cryptopulse.com</p>
+                    <p className="text-gray-600 dark:text-gray-300">info@Cryptoctabil.com</p>
                   </div>
                   <div>
                     <p className="font-medium">Support</p>
-                    <p className="text-gray-600 dark:text-gray-300">support@cryptopulse.com</p>
+                    <p className="text-gray-600 dark:text-gray-300">support@Cryptoctabil.com</p>
                   </div>
                   <div>
                     <p className="font-medium">Press</p>
-                    <p className="text-gray-600 dark:text-gray-300">press@cryptopulse.com</p>
+                    <p className="text-gray-600 dark:text-gray-300">press@Cryptoctabil.com</p>
                   </div>
                   <div>
                     <p className="font-medium">Office</p>

@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
                 <Globe size={20} className="text-white" />
               </div>
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500">
-                CryptoPulse
+                Cryptoctabil
               </span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs">
@@ -93,7 +93,7 @@ const Footer: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <p>&copy; {new Date().getFullYear()} CryptoPulse. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Crypto. All rights reserved.</p>
         </motion.div>
       </div>
     </footer>
