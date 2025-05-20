@@ -107,6 +107,10 @@ const Navbar: React.FC = () => {
             className="md:hidden overflow-hidden bg-white dark:bg-dark-600 border-t border-gray-100 dark:border-dark-500"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col">
+              {/* Tambahkan di sini */}
+              <div className="mb-4 flex justify-end">
+                <ThemeToggle />
+              </div>
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.path}
