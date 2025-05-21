@@ -9,8 +9,9 @@ const Globe = () => {
   const { theme } = useTheme();
   
   // Create textures based on theme - using more reliable image URLs
-  const darkMap = useTexture('https://i.imgur.com/jYLeHQt.jpeg');
-  const lightMap = useTexture('https://i.imgur.com/jYLeHQt.jpeg');
+  const darkMap = useTexture('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+const lightMap = useTexture('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+
   
   useEffect(() => {
     if (darkMap && lightMap) {
@@ -29,7 +30,7 @@ const Globe = () => {
   });
   
   return (
-    <mesh ref={meshRef} scale={2.5}>
+    <mesh ref={meshRef} scale={2.1}>
       <sphereGeometry args={[1, 64, 64]} />
       <meshStandardMaterial
         map={theme === 'dark' ? darkMap : lightMap}
