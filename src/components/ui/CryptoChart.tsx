@@ -32,22 +32,30 @@ interface CryptoChartProps {
 const CryptoChart: React.FC<CryptoChartProps> = ({ cryptoData }) => {
   const { theme } = useTheme();
   
-  const sparklineData = cryptoData.sparkline_in_7d?.price || [];
+  const rawSparkline = cryptoData.sparkline_in_7d?.price || [];
+  const lastPrice = rawSparkline[rawSparkline.length - 1];
+  const sparklineData = lastPrice !== cryptoData.current_price
+    ? [...rawSparkline, cryptoData.current_price]
+    : rawSparkline;
+
   const isPositiveChange = cryptoData.price_change_percentage_24h >= 0;
+
   
   // Generate labels for the last 7 days
   const generateLabels = () => {
-    const labels = [];
-    const now = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(now.getDate() - i);
-      labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-    }
-    
-    return labels;
+  const labels = [];
+  const now = new Date();
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(now.getDate() - i);
+    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  }
+
+  labels.push('Now'); // Label untuk current_price
+  return labels;
   };
+
   
   // Chart options and data
   const chartData = {

@@ -9,8 +9,8 @@ const Globe = () => {
   const { theme } = useTheme();
   
   // Create textures based on theme - using more reliable image URLs
-  const darkMap = useTexture('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
-const lightMap = useTexture('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+  const darkMap = useTexture('https://uc7b8ffa902cd83da576ebf96066.previews.dropboxusercontent.com/p/thumb/ACom-uFtFkf3kjXGgylcq2bItG0Ply5Uv8kndVHqLrWV0Ya2iqprXmRpMemX4GipnF6Sp9nbOeHxAZryp7e7G76csT0BuCt2DKcKdrwjjVuI_3bm8M04-wR_ylYJH0hHMPwgutgzNFcOgMEOrFBOjJONvWMuCEmzEi1Ktc1lDtHkarckkSNEIOOk0vbjqFDkPPd16wntxbbCzJGzKwHGIbk1i6u45cPbD7WPdiQfOwv-FnNQErqel1ku36z5HwMPZiJPKBtHZWPTt9m2ZSFMfHXngHnw33Tm5-APV8pICZmn29JZWkyVP96SUbPlzp0fmMKjIbgG1GtxQzjUhffxeZTuHMg9nIlBdI1fp2RsDeK4YCKD8SJBXvhnWV0a5PGYDYr95NElqloqXJeg0PmukTYP/p.jpeg?is_prewarmed=true');
+const lightMap = useTexture('https://uc7b8ffa902cd83da576ebf96066.previews.dropboxusercontent.com/p/thumb/ACom-uFtFkf3kjXGgylcq2bItG0Ply5Uv8kndVHqLrWV0Ya2iqprXmRpMemX4GipnF6Sp9nbOeHxAZryp7e7G76csT0BuCt2DKcKdrwjjVuI_3bm8M04-wR_ylYJH0hHMPwgutgzNFcOgMEOrFBOjJONvWMuCEmzEi1Ktc1lDtHkarckkSNEIOOk0vbjqFDkPPd16wntxbbCzJGzKwHGIbk1i6u45cPbD7WPdiQfOwv-FnNQErqel1ku36z5HwMPZiJPKBtHZWPTt9m2ZSFMfHXngHnw33Tm5-APV8pICZmn29JZWkyVP96SUbPlzp0fmMKjIbgG1GtxQzjUhffxeZTuHMg9nIlBdI1fp2RsDeK4YCKD8SJBXvhnWV0a5PGYDYr95NElqloqXJeg0PmukTYP/p.jpeg?is_prewarmed=true');
 
   
   useEffect(() => {
