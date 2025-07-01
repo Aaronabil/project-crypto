@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -11,6 +12,16 @@ import Dashboard from './pages/Dashboard';
 import News from './pages/News';
 import Wallet from './pages/Wallet';
 import About from './pages/About';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   return (
@@ -30,6 +41,7 @@ function App() {
                 </Routes>
               </AnimatePresence>
             </Layout>
+            <ScrollToTop />
           </div>
         </Router>
       </CryptoDataProvider>

@@ -34,26 +34,33 @@ const CryptoChart: React.FC<CryptoChartProps> = ({ cryptoData }) => {
   
   const rawSparkline = cryptoData.sparkline_in_7d?.price || [];
   const lastPrice = rawSparkline[rawSparkline.length - 1];
-  const sparklineData = lastPrice !== cryptoData.current_price
+  let sparklineData = lastPrice !== cryptoData.current_price
     ? [...rawSparkline, cryptoData.current_price]
     : rawSparkline;
 
-  const isPositiveChange = cryptoData.price_change_percentage_24h >= 0;
-
-  
-  // Generate labels for the last 7 days
-  const generateLabels = () => {
-  const labels = [];
-  const now = new Date();
-
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(now.getDate() - i);
-    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  // Jika perubahan sangat kecil, paksa grafik flat
+  if (Math.abs(cryptoData.price_change_percentage_24h) < 0.01) {
+    sparklineData = Array(sparklineData.length).fill(cryptoData.current_price);
   }
 
-  labels.push('Now'); // Label untuk current_price
-  return labels;
+  const isPositiveChange = cryptoData.price_change_percentage_24h >= 0;
+
+  // Generate labels sesuai jumlah data
+  const generateLabels = () => {
+    const labels = [];
+    const now = new Date();
+    const dataLength = sparklineData.length;
+    // Estimasi interval (dalam menit) antar data
+    const intervalMinutes = 7 * 24 * 60 / (dataLength - 1);
+    for (let i = 0; i < dataLength; i++) {
+      if (i === dataLength - 1 && lastPrice !== cryptoData.current_price) {
+        labels.push('Now');
+      } else {
+        const date = new Date(now.getTime() - (dataLength - 1 - i) * intervalMinutes * 60 * 1000);
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}));
+      }
+    }
+    return labels;
   };
 
   

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
   PieChart, Wallet as WalletIcon, Repeat, TrendingUp, BarChart2, 
@@ -6,6 +6,11 @@ import {
 } from 'lucide-react';
 import { useCryptoData } from '../contexts/CryptoContext';
 import CryptoChart from '../components/ui/CryptoChart';
+// import { FaCaretDown } from "react-icons/fa";
+import { Listbox } from '@headlessui/react';
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface PortfolioAsset {
   cryptoId: string;
@@ -23,11 +28,22 @@ interface Transaction {
   timestamp: number;
 }
 
+const currencyList = [
+  { code: 'USD', name: 'US Dollar'},
+  { code: 'IDR', name: 'Indonesian Rupiah'},
+  { code: 'EUR', name: 'Euro'},
+  { code: 'JPY', name: 'Japanese Yen'},
+  ];
+
 const Wallet: React.FC = () => {
   const { cryptoData } = useCryptoData();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [portfolio, setPortfolio] = useState<PortfolioAsset[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currency, setCurrency] = useState(currencyList[0]);
+  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
+  const [dateTime, setDateTime] = useState(new Date());
+
   
   // Initialize demo portfolio data
   useEffect(() => {
@@ -181,36 +197,74 @@ const Wallet: React.FC = () => {
   const [selectedCryptoId, setSelectedCryptoId] = useState('');
   const [assetAmount, setAssetAmount] = useState('');
   
+  const fiatToUsdRates: Record<string, number> = {
+    IDR: 0.000062, // 1 IDR = 0.000062 USD (example, update as needed)
+    EUR: 1.08,     // 1 EUR = 1.08 USD (example)
+    JPY: 0.0063,   // 1 JPY = 0.0063 USD (example)
+    USD: 1,
+  };
+
   const handleAddAsset = () => {
     if (!selectedCryptoId || !assetAmount || parseFloat(assetAmount) <= 0) return;
-    
+
     const crypto = cryptoData.find(c => c.id === selectedCryptoId);
     if (!crypto) return;
-    
+
+    let amountToken = 0;
+    const inputAmount = parseFloat(assetAmount);
+    const selectedCurrency = currency.code.toUpperCase();
+    const cryptoSymbol = crypto.symbol.toUpperCase();
+
+    if (selectedCurrency === cryptoSymbol) {
+      // User entered amount in token
+      amountToken = inputAmount;
+    } else if (selectedCurrency === 'USD') {
+      // User entered amount in USD
+      amountToken = inputAmount / crypto.current_price;
+    } else if (fiatToUsdRates[selectedCurrency]) {
+      // User entered amount in fiat, convert to USD then to token
+      const usdAmount = inputAmount * fiatToUsdRates[selectedCurrency];
+      amountToken = usdAmount / crypto.current_price;
+    } else {
+      // Fallback: treat as USD
+      amountToken = inputAmount / crypto.current_price;
+    }
+
     const newAsset: PortfolioAsset = {
       cryptoId: selectedCryptoId,
-      amount: parseFloat(assetAmount),
+      amount: amountToken,
       purchasePrice: crypto.current_price,
-      timestamp: Date.now()
+      timestamp: dateTime.getTime(),
     };
-    
+
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       type: 'buy',
       cryptoId: selectedCryptoId,
-      amount: parseFloat(assetAmount),
+      amount: amountToken,
       price: crypto.current_price,
-      timestamp: Date.now()
+      timestamp: dateTime.getTime(),
     };
-    
+
     setPortfolio([...portfolio, newAsset]);
     setTransactions([newTransaction, ...transactions]);
-    
-    // Reset form
     setIsAddingAsset(false);
     setSelectedCryptoId('');
     setAssetAmount('');
   };
+  
+  // Custom read-only input for DatePicker
+  const ReadOnlyInput = forwardRef(({ value, onClick, className }, ref) => (
+    <input
+      type="text"
+      readOnly
+      value={value}
+      onClick={onClick}
+      ref={ref}
+      className={className}
+      style={{ cursor: 'default', backgroundColor: 'inherit' }}
+    />
+  ));
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -340,32 +394,139 @@ const Wallet: React.FC = () => {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
-                  <select
-                    value={selectedCryptoId}
-                    onChange={(e) => setSelectedCryptoId(e.target.value)}
-                    className="input-field"
-                  >
-                    <option value="">Select a cryptocurrency</option>
-                    {cryptoData.map(crypto => (
-                      <option key={crypto.id} value={crypto.id}>
-                        {crypto.name} ({crypto.symbol.toUpperCase()})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
+                    <Listbox value={selectedCryptoId} onChange={setSelectedCryptoId}>
+                      <div className="relative">
+                        <Listbox.Button className="input-field flex justify-between items-center w-full">
+                          <span>
+                            {selectedCryptoId ? (
+                              <>
+                                <img
+                                  src={cryptoData.find(c => c.id === selectedCryptoId)?.image}
+                                  alt={cryptoData.find(c => c.id === selectedCryptoId)?.name}
+                                  className="inline w-5 h-5 mr-2 rounded-full align-middle"
+                                />
+                                {cryptoData.find(c => c.id === selectedCryptoId)?.name} (
+                                {cryptoData.find(c => c.id === selectedCryptoId)?.symbol.toUpperCase()})
+                              </>
+                            ) : (
+                              'Select a cryptocurrency'
+                            )}
+                          </span>
+                          <ChevronDownIcon className="w-5 h-5 ml-2 text-gray-400" />
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-dark-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {cryptoData.map(crypto => (
+                            <Listbox.Option
+                              key={crypto.id}
+                              value={crypto.id}
+                              className={({ active }) =>
+                                `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                                  active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
+                                }`
+                              }
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                    <img src={crypto.image} alt={crypto.name} className="inline w-5 h-5 mr-2 rounded-full align-middle" />
+                                    {crypto.name} ({crypto.symbol.toUpperCase()})
+                                  </span>
+                                  {selected ? (
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600 dark:text-primary-400">
+                                      <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </div>
+                    </Listbox>
+                  </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Amount</label>
-                  <input
-                    type="number"
-                    placeholder="Enter amount"
-                    value={assetAmount}
-                    onChange={(e) => setAssetAmount(e.target.value)}
-                    className="input-field"
-                    min="0"
-                    step="0.0001"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal" 
+                      pattern="[0-9]*"
+                      placeholder="Enter amount"
+                      value={assetAmount}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^\d*\.?\d{0,4}$/.test(val) || val === '') {
+                          setAssetAmount(val);
+                        }
+                      }}
+                      className="input-field pr-20"
+                      min="0"
+                      step="0.0001"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-gray-500 font-semibold"
+                      onClick={() => setIsCurrencyModalOpen(true)}
+                      tabIndex={-1}
+                    >
+                      {currency.code}
+                      <ChevronDownIcon className="w-4 h-4 ml-1" />
+                    </button>
+                  </div>
+                  <label className="block text-sm font-medium mb-1 mt-3">Date</label>
+                  <div className="relative w-full">
+                    <DatePicker
+    selected={dateTime}
+    onChange={setDateTime}
+    timeFormat="hh:mm aa"
+    timeIntervals={5}
+    dateFormat="d MMMM yyyy"
+    className="input-field w-full pr-10"
+    calendarClassName="w-full"
+    popperClassName="z-50"
+    wrapperClassName="w-full"
+    customInput={<ReadOnlyInput />}
+  />
+  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10 flex items-center h-full">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <rect x="3" y="7" width="18" height="14" rx="2" strokeWidth="2" stroke="currentColor" fill="none" />
+      <path d="M16 3v4M8 3v4M3 11h18" strokeWidth="2" stroke="currentColor" />
+    </svg>
+  </span>
+                  </div>
+                  {isCurrencyModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                      <div className="bg-white dark:bg-dark-700 rounded-lg shadow-lg p-6 w-full max-w-xs">
+                        <h3 className="text-lg font-semibold mb-4">Select Currency</h3>
+                        <ul>
+                          {currencyList.map((cur) => (
+                            <li key={cur.code}>
+                              <button
+                                className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${
+                                  currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
+                                }`}
+                                onClick={() => {
+                                  setCurrency(cur);
+                                  setIsCurrencyModalOpen(false);
+                                }}
+                              >
+                                {cur.name} ({cur.code})
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                        <button
+                          className="mt-4 w-full py-2 rounded button-primary"
+                          onClick={() => setIsCurrencyModalOpen(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
                 <button 
                   onClick={handleAddAsset}
                   className="button-primary w-full"
@@ -448,6 +609,13 @@ const Wallet: React.FC = () => {
                               <span>${asset.purchasePrice.toLocaleString()}</span>
                               <span>${asset.currentPrice.toLocaleString()}</span>
                             </div>
+                            
+                            {/* Show purchase date below purchase price */}
+                            {asset.timestamp && (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                Purchased on: {new Date(asset.timestamp).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                              </div>
+                            )}
                             
                             <div className="flex justify-between items-center">
                               <div className="flex items-center">

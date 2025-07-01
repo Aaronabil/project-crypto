@@ -61,7 +61,7 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center">
+          <div className="flex flex-col md:flex-row items-center mx-6">
             <motion.div 
               className="md:w-1/2 mb-8 md:mb-0 md:pr-8"
               initial={{ opacity: 0, x: -50 }}

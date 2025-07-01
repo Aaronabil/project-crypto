@@ -63,6 +63,11 @@ const Dashboard: React.FC = () => {
     out: { opacity: 0, y: -20 }
   };
   
+  const handleCryptoClick = (cryptoId: string) => {
+    setSelectedCrypto(cryptoId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div
@@ -203,7 +208,7 @@ const Dashboard: React.FC = () => {
                     className={`border-b border-gray-100 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-600/50 cursor-pointer transition-colors duration-150 ${
                       selectedCrypto === crypto.id ? 'bg-primary-50 dark:bg-primary-900/20' : ''
                     }`}
-                    onClick={() => setSelectedCrypto(crypto.id)}
+                    onClick={() => handleCryptoClick(crypto.id)}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
