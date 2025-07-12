@@ -5,27 +5,27 @@ import { Shield, Zap, Globe, Award, Users, Send } from 'lucide-react';
 const About: React.FC = () => {
   const teamMembers = [
     {
-      name: 'Alex Johnson',
+      name: 'Muhamad Nabil',
       role: 'Founder & CEO',
-      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      bio: 'Former blockchain developer with 10+ years of experience in fintech'
+      image: 'https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/allpp.png',
+      bio: 'Former blockchain developer with 1+ years of experience in fintech'
     },
     {
-      name: 'Sarah Chen',
+      name: 'Muhamad Nabil',
       role: 'CTO',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      image: 'https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/allpp.png',
       bio: 'Cryptography expert and contributor to multiple open-source blockchain projects'
     },
     {
-      name: 'Michael Rodriguez',
+      name: 'Muhamad Nabil',
       role: 'Head of Product',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      image: 'https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/allpp.png',
       bio: 'Previously led product at a major cryptocurrency exchange'
     },
     {
-      name: 'Priya Patel',
+      name: 'Muhamad Nabil',
       role: 'Lead Designer',
-      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      image: 'https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/allpp.png',
       bio: 'Award-winning UX designer with a passion for creating intuitive interfaces'
     }
   ];
@@ -109,7 +109,7 @@ const About: React.FC = () => {
           <h2 className="text-2xl font-bold mb-6 border-b border-gray-200 dark:border-dark-500 pb-2">Our Story</h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p>
-              Cryptoctabil was founded in 2023 by a team of blockchain developers, financial experts, and design specialists who saw the need for a more intuitive and comprehensive cryptocurrency platform.
+              Cryptoctabil was founded in 2025 by a team of blockchain developers, financial experts, and design specialists who saw the need for a more intuitive and comprehensive cryptocurrency platform.
             </p>
             <p>
               We recognized that while cryptocurrency was gaining mainstream attention, the tools available to most users were complex, fragmented, and often intimidating for newcomers. Our goal was to create a unified platform that would provide real-time insights, portfolio management, and educational resources all in one place.

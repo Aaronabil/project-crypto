@@ -1,8 +1,8 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  PieChart, Wallet as WalletIcon, Repeat, TrendingUp, BarChart2, 
-  Plus, Send, ArrowDown, Settings, Trash2
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  PieChart, Wallet as WalletIcon, Repeat, TrendingUp, BarChart2,
+  Plus, Send, ArrowDown, Settings, Trash2, CheckCircle2Icon
 } from 'lucide-react';
 import { useCryptoData } from '../contexts/CryptoContext';
 import CryptoChart from '../components/ui/CryptoChart';
@@ -29,11 +29,11 @@ interface Transaction {
 }
 
 const currencyList = [
-  { code: 'USD', name: 'US Dollar'},
-  { code: 'IDR', name: 'Indonesian Rupiah'},
-  { code: 'EUR', name: 'Euro'},
-  { code: 'JPY', name: 'Japanese Yen'},
-  ];
+  { code: 'USD', name: 'US Dollar' },
+  { code: 'IDR', name: 'Indonesian Rupiah' },
+  { code: 'EUR', name: 'Euro' },
+  { code: 'JPY', name: 'Japanese Yen' },
+];
 
 const Wallet: React.FC = () => {
   const { cryptoData } = useCryptoData();
@@ -43,8 +43,9 @@ const Wallet: React.FC = () => {
   const [currency, setCurrency] = useState(currencyList[0]);
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   const [dateTime, setDateTime] = useState(new Date());
+  const [showNotif, setShowNotif] = useState(false);
 
-  
+
   // Initialize demo portfolio data
   useEffect(() => {
     if (cryptoData.length > 0 && portfolio.length === 0) {
@@ -75,9 +76,9 @@ const Wallet: React.FC = () => {
           timestamp: Date.now() - 60 * 24 * 60 * 60 * 1000 // 60 days ago
         }
       ];
-      
+
       setPortfolio(demoPortfolio);
-      
+
       // Create demo transactions
       const demoTransactions: Transaction[] = [
         {
@@ -129,31 +130,31 @@ const Wallet: React.FC = () => {
           timestamp: Date.now() - 5 * 24 * 60 * 60 * 1000
         }
       ];
-      
+
       setTransactions(demoTransactions);
     }
   }, [cryptoData, portfolio.length]);
-  
+
   // Calculate portfolio value and gains
   const calculatePortfolioStats = () => {
     let totalValue = 0;
     let totalInvestment = 0;
-    
+
     // Map portfolio assets to include current prices and values
     const portfolioWithValues = portfolio.map(asset => {
       const crypto = cryptoData.find(c => c.id === asset.cryptoId);
       const currentPrice = crypto ? crypto.current_price : 0;
       const currentValue = asset.amount * currentPrice;
       const investmentValue = asset.amount * asset.purchasePrice;
-      
+
       totalValue += currentValue;
       totalInvestment += investmentValue;
-      
+
       const profitLoss = currentValue - investmentValue;
-      const profitLossPercentage = investmentValue > 0 
-        ? (profitLoss / investmentValue) * 100 
+      const profitLossPercentage = investmentValue > 0
+        ? (profitLoss / investmentValue) * 100
         : 0;
-      
+
       return {
         ...asset,
         crypto,
@@ -164,12 +165,12 @@ const Wallet: React.FC = () => {
         profitLossPercentage
       };
     });
-    
+
     const totalProfitLoss = totalValue - totalInvestment;
-    const totalProfitLossPercentage = totalInvestment > 0 
-      ? (totalProfitLoss / totalInvestment) * 100 
+    const totalProfitLossPercentage = totalInvestment > 0
+      ? (totalProfitLoss / totalInvestment) * 100
       : 0;
-    
+
     return {
       portfolioWithValues,
       totalValue,
@@ -178,7 +179,7 @@ const Wallet: React.FC = () => {
       totalProfitLossPercentage
     };
   };
-  
+
   const {
     portfolioWithValues,
     totalValue,
@@ -186,17 +187,17 @@ const Wallet: React.FC = () => {
     totalProfitLoss,
     totalProfitLossPercentage
   } = calculatePortfolioStats();
-  
+
   const tabItems = [
     { id: 'portfolio', label: 'Portfolio', icon: <PieChart size={18} /> },
     { id: 'assets', label: 'Assets', icon: <WalletIcon size={18} /> },
     { id: 'transactions', label: 'Transactions', icon: <Repeat size={18} /> }
   ];
-  
+
   const [isAddingAsset, setIsAddingAsset] = useState(false);
   const [selectedCryptoId, setSelectedCryptoId] = useState('');
   const [assetAmount, setAssetAmount] = useState('');
-  
+
   const fiatToUsdRates: Record<string, number> = {
     IDR: 0.000062, // 1 IDR = 0.000062 USD (example, update as needed)
     EUR: 1.08,     // 1 EUR = 1.08 USD (example)
@@ -251,8 +252,10 @@ const Wallet: React.FC = () => {
     setIsAddingAsset(false);
     setSelectedCryptoId('');
     setAssetAmount('');
+    setShowNotif(true);
+    setTimeout(() => setShowNotif(false), 2500);
   };
-  
+
   // Custom read-only input for DatePicker
   const ReadOnlyInput = forwardRef(({ value, onClick, className }, ref) => (
     <input
@@ -265,23 +268,49 @@ const Wallet: React.FC = () => {
       style={{ cursor: 'default', backgroundColor: 'inherit' }}
     />
   ));
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Notifikasi coin berhasil ditambahkan di pojok kanan bawah */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={showNotif ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 32, duration: 1 }}
+        style={{ pointerEvents: 'none' }}
+        className="fixed bottom-6 right-6 z-50"
+      >
+        <AnimatePresence>
+        {showNotif && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 32, duration: 1 }}
+            className="bg-dark-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
+          >
+            <CheckCircle2Icon className="w-5 h-5 text-white" />
+            <div>
+              <div className="font-semibold">Coin successfully added to portfolio!</div>
+              <div className="text-xs opacity-80">A new asset has been added to your portfolio list.</div>
+            </div>
+          </motion.div>
+        )}
+        </AnimatePresence>
+      </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-2xl md:text-3xl font-bold mb-8">Crypto Wallet</h1>
-        
+
         {/* Demo Disclaimer */}
         <div className="glass-panel p-4 mb-8 bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800">
           <p className="text-accent-800 dark:text-accent-300 text-sm">
             <span className="font-medium">⚠️ Demo Wallet:</span> This is a simulation for demonstration purposes. No real cryptocurrency transactions are performed.
           </p>
         </div>
-        
+
         {/* Portfolio Overview */}
         <div className="glass-panel p-6 mb-8">
           <div className="grid md:grid-cols-3 gap-6">
@@ -298,28 +327,27 @@ const Wallet: React.FC = () => {
                 </div>
                 <div className="p-4 bg-white/40 dark:bg-dark-600/40 rounded-lg col-span-2 md:col-span-1">
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Profit/Loss</p>
-                  <p className={`text-xl font-semibold ${
-                    totalProfitLoss >= 0 ? 'text-success-500' : 'text-error-500'
-                  }`}>
+                  <p className={`text-xl font-semibold ${totalProfitLoss >= 0 ? 'text-success-500' : 'text-error-500'
+                    }`}>
                     {totalProfitLoss >= 0 ? '+' : ''}${totalProfitLoss.toLocaleString()} ({totalProfitLossPercentage.toFixed(2)}%)
                   </p>
                 </div>
               </div>
-              
+
               {portfolioWithValues.length > 0 && portfolioWithValues[0].crypto && (
                 <div className="h-64">
                   <CryptoChart cryptoData={portfolioWithValues[0].crypto} />
                 </div>
               )}
             </div>
-            
+
             <div className="col-span-3 md:col-span-1">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold">Quick Actions</h3>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 mb-6">
-                <button 
+                <button
                   onClick={() => setIsAddingAsset(true)}
                   className="button-primary flex flex-col items-center justify-center py-3"
                 >
@@ -339,17 +367,17 @@ const Wallet: React.FC = () => {
                   <span>Swap</span>
                 </button>
               </div>
-              
+
               <h3 className="font-semibold mb-3">Top Assets</h3>
               <div className="space-y-3">
                 {portfolioWithValues.slice(0, 3).map(asset => (
                   <div key={asset.cryptoId} className="p-3 bg-white/40 dark:bg-dark-600/40 rounded-lg flex items-center">
                     {asset.crypto && (
                       <>
-                        <img 
-                          src={asset.crypto.image} 
+                        <img
+                          src={asset.crypto.image}
                           alt={asset.crypto.name}
-                          className="w-8 h-8 rounded-full mr-3" 
+                          className="w-8 h-8 rounded-full mr-3"
                         />
                         <div className="flex-1">
                           <div className="flex justify-between items-center">
@@ -371,11 +399,11 @@ const Wallet: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Add Asset Modal */}
         {isAddingAsset && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <motion.div 
+            <motion.div
               className="glass-panel p-6 w-full max-w-md rounded-xl"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -384,73 +412,72 @@ const Wallet: React.FC = () => {
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Add Asset</h3>
-                <button 
+                <button
                   onClick={() => setIsAddingAsset(false)}
                   className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-dark-500"
                 >
                   <Trash2 size={18} />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
-                    <Listbox value={selectedCryptoId} onChange={setSelectedCryptoId}>
-                      <div className="relative">
-                        <Listbox.Button className="input-field flex justify-between items-center w-full">
-                          <span>
-                            {selectedCryptoId ? (
+                  <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
+                  <Listbox value={selectedCryptoId} onChange={setSelectedCryptoId}>
+                    <div className="relative">
+                      <Listbox.Button className="input-field flex justify-between items-center w-full">
+                        <span>
+                          {selectedCryptoId ? (
+                            <>
+                              <img
+                                src={cryptoData.find(c => c.id === selectedCryptoId)?.image}
+                                alt={cryptoData.find(c => c.id === selectedCryptoId)?.name}
+                                className="inline w-5 h-5 mr-2 rounded-full align-middle"
+                              />
+                              {cryptoData.find(c => c.id === selectedCryptoId)?.name} (
+                              {cryptoData.find(c => c.id === selectedCryptoId)?.symbol.toUpperCase()})
+                            </>
+                          ) : (
+                            'Select a cryptocurrency'
+                          )}
+                        </span>
+                        <ChevronDownIcon className="w-5 h-5 ml-2 text-gray-400" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-dark-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {cryptoData.map(crypto => (
+                          <Listbox.Option
+                            key={crypto.id}
+                            value={crypto.id}
+                            className={({ active }) =>
+                              `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
+                              }`
+                            }
+                          >
+                            {({ selected }) => (
                               <>
-                                <img
-                                  src={cryptoData.find(c => c.id === selectedCryptoId)?.image}
-                                  alt={cryptoData.find(c => c.id === selectedCryptoId)?.name}
-                                  className="inline w-5 h-5 mr-2 rounded-full align-middle"
-                                />
-                                {cryptoData.find(c => c.id === selectedCryptoId)?.name} (
-                                {cryptoData.find(c => c.id === selectedCryptoId)?.symbol.toUpperCase()})
-                              </>
-                            ) : (
-                              'Select a cryptocurrency'
-                            )}
-                          </span>
-                          <ChevronDownIcon className="w-5 h-5 ml-2 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-dark-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {cryptoData.map(crypto => (
-                            <Listbox.Option
-                              key={crypto.id}
-                              value={crypto.id}
-                              className={({ active }) =>
-                                `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                                  active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
-                                }`
-                              }
-                            >
-                              {({ selected }) => (
-                                <>
-                                  <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                                    <img src={crypto.image} alt={crypto.name} className="inline w-5 h-5 mr-2 rounded-full align-middle" />
-                                    {crypto.name} ({crypto.symbol.toUpperCase()})
+                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                  <img src={crypto.image} alt={crypto.name} className="inline w-5 h-5 mr-2 rounded-full align-middle" />
+                                  {crypto.name} ({crypto.symbol.toUpperCase()})
+                                </span>
+                                {selected ? (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600 dark:text-primary-400">
+                                    <CheckIcon className="w-5 h-5" aria-hidden="true" />
                                   </span>
-                                  {selected ? (
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600 dark:text-primary-400">
-                                      <CheckIcon className="w-5 h-5" aria-hidden="true" />
-                                    </span>
-                                  ) : null}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </div>
-                    </Listbox>
-                  </div>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
+                </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Amount</label>
                   <div className="relative">
                     <input
                       type="text"
-                      inputMode="decimal" 
+                      inputMode="decimal"
                       pattern="[0-9]*"
                       placeholder="Enter amount"
                       value={assetAmount}
@@ -477,23 +504,23 @@ const Wallet: React.FC = () => {
                   <label className="block text-sm font-medium mb-1 mt-3">Date</label>
                   <div className="relative w-full">
                     <DatePicker
-    selected={dateTime}
-    onChange={setDateTime}
-    timeFormat="hh:mm aa"
-    timeIntervals={5}
-    dateFormat="d MMMM yyyy"
-    className="input-field w-full pr-10"
-    calendarClassName="w-full"
-    popperClassName="z-50"
-    wrapperClassName="w-full"
-    customInput={<ReadOnlyInput />}
-  />
-  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10 flex items-center h-full">
-    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <rect x="3" y="7" width="18" height="14" rx="2" strokeWidth="2" stroke="currentColor" fill="none" />
-      <path d="M16 3v4M8 3v4M3 11h18" strokeWidth="2" stroke="currentColor" />
-    </svg>
-  </span>
+                      selected={dateTime}
+                      onChange={setDateTime}
+                      timeFormat="hh:mm aa"
+                      timeIntervals={5}
+                      dateFormat="d MMMM yyyy"
+                      className="input-field w-full pr-10"
+                      calendarClassName="w-full"
+                      popperClassName="z-50"
+                      wrapperClassName="w-full"
+                      customInput={<ReadOnlyInput />}
+                    />
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-1 flex items-center h-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <rect x="3" y="7" width="18" height="14" rx="2" strokeWidth="2" stroke="currentColor" fill="none" />
+                        <path d="M16 3v4M8 3v4M3 11h18" strokeWidth="2" stroke="currentColor" />
+                      </svg>
+                    </span>
                   </div>
                   {isCurrencyModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -503,9 +530,8 @@ const Wallet: React.FC = () => {
                           {currencyList.map((cur) => (
                             <li key={cur.code}>
                               <button
-                                className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${
-                                  currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
-                                }`}
+                                className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
+                                  }`}
                                 onClick={() => {
                                   setCurrency(cur);
                                   setIsCurrencyModalOpen(false);
@@ -527,7 +553,7 @@ const Wallet: React.FC = () => {
                   )}
                 </div>
 
-                <button 
+                <button
                   onClick={handleAddAsset}
                   className="button-primary w-full"
                   disabled={!selectedCryptoId || !assetAmount || parseFloat(assetAmount) <= 0}
@@ -538,7 +564,7 @@ const Wallet: React.FC = () => {
             </motion.div>
           </div>
         )}
-        
+
         {/* Tabs Navigation */}
         <div className="glass-panel overflow-hidden">
           <div className="flex border-b border-gray-200 dark:border-dark-500">
@@ -546,11 +572,10 @@ const Wallet: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`px-4 py-3 flex items-center text-sm font-medium transition-colors duration-200 relative ${
-                  activeTab === item.id
-                    ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400'
-                }`}
+                className={`px-4 py-3 flex items-center text-sm font-medium transition-colors duration-200 relative ${activeTab === item.id
+                  ? 'text-primary-600 dark:text-primary-400'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400'
+                  }`}
               >
                 <span className="mr-2">{item.icon}</span>
                 <span>{item.label}</span>
@@ -565,7 +590,7 @@ const Wallet: React.FC = () => {
               </button>
             ))}
           </div>
-          
+
           <div className="p-4">
             {/* Portfolio Tab Content */}
             {activeTab === 'portfolio' && (
@@ -576,7 +601,7 @@ const Wallet: React.FC = () => {
                     <Settings size={18} />
                   </button>
                 </div>
-                
+
                 {portfolioWithValues.length > 0 ? (
                   <div className="space-y-4">
                     {portfolioWithValues.map(asset => (
@@ -585,10 +610,10 @@ const Wallet: React.FC = () => {
                           <>
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center">
-                                <img 
-                                  src={asset.crypto.image} 
+                                <img
+                                  src={asset.crypto.image}
                                   alt={asset.crypto.name}
-                                  className="w-6 h-6 rounded-full mr-2" 
+                                  className="w-6 h-6 rounded-full mr-2"
                                 />
                                 <span className="font-medium">{asset.crypto.name}</span>
                               </div>
@@ -599,24 +624,24 @@ const Wallet: React.FC = () => {
                                 </p>
                               </div>
                             </div>
-                            
+
                             <div className="flex justify-between text-xs mb-1">
                               <span>Purchase Price</span>
                               <span>Current Price</span>
                             </div>
-                            
+
                             <div className="flex justify-between text-sm mb-2">
                               <span>${asset.purchasePrice.toLocaleString()}</span>
                               <span>${asset.currentPrice.toLocaleString()}</span>
                             </div>
-                            
+
                             {/* Show purchase date below purchase price */}
                             {asset.timestamp && (
                               <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                                 Purchased on: {new Date(asset.timestamp).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                               </div>
                             )}
-                            
+
                             <div className="flex justify-between items-center">
                               <div className="flex items-center">
                                 {asset.profitLossPercentage >= 0 ? (
@@ -624,9 +649,8 @@ const Wallet: React.FC = () => {
                                 ) : (
                                   <ArrowDown size={16} className="text-error-500 mr-1" />
                                 )}
-                                <span className={`text-sm font-medium ${
-                                  asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'
-                                }`}>
+                                <span className={`text-sm font-medium ${asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'
+                                  }`}>
                                   {asset.profitLossPercentage >= 0 ? '+' : ''}
                                   {asset.profitLossPercentage.toFixed(2)}%
                                 </span>
@@ -660,7 +684,7 @@ const Wallet: React.FC = () => {
                 )}
               </div>
             )}
-            
+
             {/* Assets Tab Content */}
             {activeTab === 'assets' && (
               <div>
@@ -674,7 +698,7 @@ const Wallet: React.FC = () => {
                     <span>Add Asset</span>
                   </button>
                 </div>
-                
+
                 {portfolioWithValues.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[600px]">
@@ -694,9 +718,9 @@ const Wallet: React.FC = () => {
                             <tr key={asset.cryptoId} className="border-b border-gray-100 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-600/50">
                               <td className="py-3 px-2">
                                 <div className="flex items-center">
-                                  <img 
-                                    src={asset.crypto.image} 
-                                    alt={asset.crypto.name} 
+                                  <img
+                                    src={asset.crypto.image}
+                                    alt={asset.crypto.name}
                                     className="w-6 h-6 mr-2 rounded-full"
                                   />
                                   <div>
@@ -714,9 +738,8 @@ const Wallet: React.FC = () => {
                               <td className="py-3 px-2 text-right font-medium">
                                 ${asset.currentValue.toLocaleString()}
                               </td>
-                              <td className={`py-3 px-2 text-right font-medium ${
-                                asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'
-                              }`}>
+                              <td className={`py-3 px-2 text-right font-medium ${asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'
+                                }`}>
                                 {asset.profitLossPercentage >= 0 ? '+' : ''}
                                 {asset.profitLossPercentage.toFixed(2)}%
                               </td>
@@ -751,7 +774,7 @@ const Wallet: React.FC = () => {
                 )}
               </div>
             )}
-            
+
             {/* Transactions Tab Content */}
             {activeTab === 'transactions' && (
               <div>
@@ -766,7 +789,7 @@ const Wallet: React.FC = () => {
                     </select>
                   </div>
                 </div>
-                
+
                 {transactions.length > 0 ? (
                   <div className="space-y-3">
                     {transactions.map(tx => {
@@ -778,12 +801,12 @@ const Wallet: React.FC = () => {
                               {tx.type === 'buy' && <Plus size={18} className="text-success-500 mr-2" />}
                               {tx.type === 'sell' && <ArrowDown size={18} className="text-error-500 mr-2" />}
                               {tx.type === 'transfer' && <Repeat size={18} className="text-primary-500 mr-2" />}
-                              
+
                               {crypto && (
                                 <div className="flex items-center">
-                                  <img 
-                                    src={crypto.image} 
-                                    alt={crypto.name} 
+                                  <img
+                                    src={crypto.image}
+                                    alt={crypto.name}
                                     className="w-6 h-6 mr-2 rounded-full"
                                   />
                                   <div>
