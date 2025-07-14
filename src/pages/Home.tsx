@@ -7,6 +7,7 @@ import { ArrowRight, TrendingUp, Globe, Shield, Zap } from 'lucide-react';
 import { useCryptoData } from '../contexts/CryptoContext';
 import CryptoCard from '../components/ui/CryptoCard';
 import { World } from '../components/3d/Globe';
+import Silk from '../components/reactbits/Silk';
 
 
 
@@ -626,15 +627,24 @@ const Home: React.FC = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-primary-500 to-secondary-500 text-white">
-        <div className="container mx-auto px-4">
+      <section className="py-16 relative overflow-hidden">
+        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+          <Silk 
+            speed={5}
+            scale={1}
+            color="#6466f1"
+            noiseIntensity={1.5}
+            rotation={0}
+          />
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div 
             className="max-w-3xl mx-auto text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-          >
+          > 
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
               Ready to start your cryptocurrency journey?
             </h2>

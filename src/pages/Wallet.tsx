@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   PieChart, Wallet as WalletIcon, Repeat, TrendingUp, BarChart2,
-  Plus, Send, ArrowDown, Settings, Trash2, CheckCircle2Icon
+  Plus, Send, ArrowDown, Settings, X, CheckCircle2Icon
 } from 'lucide-react';
 import { useCryptoData } from '../contexts/CryptoContext';
 import CryptoChart from '../components/ui/CryptoChart';
@@ -51,30 +51,30 @@ const Wallet: React.FC = () => {
     if (cryptoData.length > 0 && portfolio.length === 0) {
       // Create a demo portfolio with the top 4 cryptocurrencies
       const demoPortfolio: PortfolioAsset[] = [
-        {
-          cryptoId: 'bitcoin',
-          amount: 0.75,
-          purchasePrice: 48000,
-          timestamp: Date.now() - 30 * 24 * 60 * 60 * 1000 // 30 days ago
-        },
-        {
-          cryptoId: 'ethereum',
-          amount: 5.2,
-          purchasePrice: 2500,
-          timestamp: Date.now() - 45 * 24 * 60 * 60 * 1000 // 45 days ago
-        },
-        {
-          cryptoId: 'solana',
-          amount: 25,
-          purchasePrice: 90,
-          timestamp: Date.now() - 15 * 24 * 60 * 60 * 1000 // 15 days ago
-        },
-        {
-          cryptoId: 'cardano',
-          amount: 1000,
-          purchasePrice: 0.32,
-          timestamp: Date.now() - 60 * 24 * 60 * 60 * 1000 // 60 days ago
-        }
+        // {
+        //   cryptoId: 'bitcoin',
+        //   amount: 0.75,
+        //   purchasePrice: 48000,
+        //   timestamp: Date.now() - 30 * 24 * 60 * 60 * 1000 // 30 days ago
+        // }
+        // {
+        //   cryptoId: 'ethereum',
+        //   amount: 5.2,
+        //   purchasePrice: 2500,
+        //   timestamp: Date.now() - 45 * 24 * 60 * 60 * 1000 // 45 days ago
+        // },
+        // {
+        //   cryptoId: 'solana',
+        //   amount: 25,
+        //   purchasePrice: 90,
+        //   timestamp: Date.now() - 15 * 24 * 60 * 60 * 1000 // 15 days ago
+        // },
+        // {
+        //   cryptoId: 'cardano',
+        //   amount: 1000,
+        //   purchasePrice: 0.32,
+        //   timestamp: Date.now() - 60 * 24 * 60 * 60 * 1000 // 60 days ago
+        // }
       ];
 
       setPortfolio(demoPortfolio);
@@ -280,21 +280,21 @@ const Wallet: React.FC = () => {
         className="fixed bottom-6 right-6 z-50"
       >
         <AnimatePresence>
-        {showNotif && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 32, duration: 1 }}
-            className="bg-dark-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
-          >
-            <CheckCircle2Icon className="w-5 h-5 text-white" />
-            <div>
-              <div className="font-semibold">Coin successfully added to portfolio!</div>
-              <div className="text-xs opacity-80">A new asset has been added to your portfolio list.</div>
-            </div>
-          </motion.div>
-        )}
+          {showNotif && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 32, duration: 1 }}
+              className="bg-dark-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
+            >
+              <CheckCircle2Icon className="w-5 h-5 text-white" />
+              <div>
+                <div className="font-semibold">Coin successfully added to portfolio!</div>
+                <div className="text-xs opacity-80">A new asset has been added to your portfolio list.</div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </motion.div>
       <motion.div
@@ -401,169 +401,195 @@ const Wallet: React.FC = () => {
         </div>
 
         {/* Add Asset Modal */}
-        {isAddingAsset && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <AnimatePresence>
+          {isAddingAsset && (
             <motion.div
-              className="glass-panel p-6 w-full max-w-md rounded-xl"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
+              key="modal-bg"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold">Add Asset</h3>
-                <button
-                  onClick={() => setIsAddingAsset(false)}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-dark-500"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+              <motion.div
+                key="modal-panel"
+                className="glass-panel p-6 w-full max-w-md rounded-xl"
+                initial={{ opacity: 0, scale: 0.95, y: 40 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 40 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28, duration: 0.35 }}
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold">Add Asset</h3>
+                  <button
+                    onClick={() => setIsAddingAsset(false)}
+                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-dark-500"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
-                  <Listbox value={selectedCryptoId} onChange={setSelectedCryptoId}>
-                    <div className="relative">
-                      <Listbox.Button className="input-field flex justify-between items-center w-full">
-                        <span>
-                          {selectedCryptoId ? (
-                            <>
-                              <img
-                                src={cryptoData.find(c => c.id === selectedCryptoId)?.image}
-                                alt={cryptoData.find(c => c.id === selectedCryptoId)?.name}
-                                className="inline w-5 h-5 mr-2 rounded-full align-middle"
-                              />
-                              {cryptoData.find(c => c.id === selectedCryptoId)?.name} (
-                              {cryptoData.find(c => c.id === selectedCryptoId)?.symbol.toUpperCase()})
-                            </>
-                          ) : (
-                            'Select a cryptocurrency'
-                          )}
-                        </span>
-                        <ChevronDownIcon className="w-5 h-5 ml-2 text-gray-400" />
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-dark-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {cryptoData.map(crypto => (
-                          <Listbox.Option
-                            key={crypto.id}
-                            value={crypto.id}
-                            className={({ active }) =>
-                              `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
-                              }`
-                            }
-                          >
-                            {({ selected }) => (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Select Cryptocurrency</label>
+                    <Listbox value={selectedCryptoId} onChange={setSelectedCryptoId}>
+                      <div className="relative">
+                        <Listbox.Button className="input-field flex justify-between items-center w-full">
+                          <span>
+                            {selectedCryptoId ? (
                               <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                                  <img src={crypto.image} alt={crypto.name} className="inline w-5 h-5 mr-2 rounded-full align-middle" />
-                                  {crypto.name} ({crypto.symbol.toUpperCase()})
-                                </span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600 dark:text-primary-400">
-                                    <CheckIcon className="w-5 h-5" aria-hidden="true" />
-                                  </span>
-                                ) : null}
+                                <img
+                                  src={cryptoData.find(c => c.id === selectedCryptoId)?.image}
+                                  alt={cryptoData.find(c => c.id === selectedCryptoId)?.name}
+                                  className="inline w-5 h-5 mr-2 rounded-full align-middle"
+                                />
+                                {cryptoData.find(c => c.id === selectedCryptoId)?.name} (
+                                {cryptoData.find(c => c.id === selectedCryptoId)?.symbol.toUpperCase()})
                               </>
+                            ) : (
+                              'Select a cryptocurrency'
                             )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </div>
-                  </Listbox>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Amount</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      pattern="[0-9]*"
-                      placeholder="Enter amount"
-                      value={assetAmount}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (/^\d*\.?\d{0,4}$/.test(val) || val === '') {
-                          setAssetAmount(val);
-                        }
-                      }}
-                      className="input-field pr-20"
-                      min="0"
-                      step="0.0001"
-                    />
-                    <button
-                      type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-gray-500 font-semibold"
-                      onClick={() => setIsCurrencyModalOpen(true)}
-                      tabIndex={-1}
-                    >
-                      {currency.code}
-                      <ChevronDownIcon className="w-4 h-4 ml-1" />
-                    </button>
-                  </div>
-                  <label className="block text-sm font-medium mb-1 mt-3">Date</label>
-                  <div className="relative w-full">
-                    <DatePicker
-                      selected={dateTime}
-                      onChange={setDateTime}
-                      timeFormat="hh:mm aa"
-                      timeIntervals={5}
-                      dateFormat="d MMMM yyyy"
-                      className="input-field w-full pr-10"
-                      calendarClassName="w-full"
-                      popperClassName="z-50"
-                      wrapperClassName="w-full"
-                      customInput={<ReadOnlyInput />}
-                    />
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-1 flex items-center h-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <rect x="3" y="7" width="18" height="14" rx="2" strokeWidth="2" stroke="currentColor" fill="none" />
-                        <path d="M16 3v4M8 3v4M3 11h18" strokeWidth="2" stroke="currentColor" />
-                      </svg>
-                    </span>
-                  </div>
-                  {isCurrencyModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                      <div className="bg-white dark:bg-dark-700 rounded-lg shadow-lg p-6 w-full max-w-xs">
-                        <h3 className="text-lg font-semibold mb-4">Select Currency</h3>
-                        <ul>
-                          {currencyList.map((cur) => (
-                            <li key={cur.code}>
-                              <button
-                                className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
-                                  }`}
-                                onClick={() => {
-                                  setCurrency(cur);
-                                  setIsCurrencyModalOpen(false);
-                                }}
-                              >
-                                {cur.name} ({cur.code})
-                              </button>
-                            </li>
+                          </span>
+                          <ChevronDownIcon className="w-5 h-5 ml-2 text-gray-400" />
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-dark-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {cryptoData.map(crypto => (
+                            <Listbox.Option
+                              key={crypto.id}
+                              value={crypto.id}
+                              className={({ active }) =>
+                                `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
+                                }`
+                              }
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                    <img src={crypto.image} alt={crypto.name} className="inline w-5 h-5 mr-2 rounded-full align-middle" />
+                                    {crypto.name} ({crypto.symbol.toUpperCase()})
+                                  </span>
+                                  {selected ? (
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600 dark:text-primary-400">
+                                      <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
                           ))}
-                        </ul>
-                        <button
-                          className="mt-4 w-full py-2 rounded button-primary"
-                          onClick={() => setIsCurrencyModalOpen(false)}
-                        >
-                          Cancel
-                        </button>
+                        </Listbox.Options>
                       </div>
+                    </Listbox>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Amount</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        pattern="[0-9]*"
+                        placeholder="Enter amount"
+                        value={assetAmount}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (/^\d*\.?\d{0,4}$/.test(val) || val === '') {
+                            setAssetAmount(val);
+                          }
+                        }}
+                        className="input-field pr-20"
+                        min="0"
+                        step="0.0001"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-gray-500 font-semibold"
+                        onClick={() => setIsCurrencyModalOpen(true)}
+                        tabIndex={-1}
+                      >
+                        {currency.code}
+                        <ChevronDownIcon className="w-4 h-4 ml-1" />
+                      </button>
                     </div>
-                  )}
-                </div>
+                    <label className="block text-sm font-medium mb-1 mt-3">Date</label>
+                    <div className="relative w-full">
+                      <DatePicker
+                        selected={dateTime}
+                        onChange={setDateTime}
+                        timeFormat="hh:mm aa"
+                        timeIntervals={5}
+                        dateFormat="d MMMM yyyy"
+                        className="input-field w-full pr-10"
+                        calendarClassName="w-full"
+                        popperClassName="z-50"
+                        wrapperClassName="w-full"
+                        customInput={<ReadOnlyInput />}
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-1 flex items-center h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <rect x="3" y="7" width="18" height="14" rx="2" strokeWidth="2" stroke="currentColor" fill="none" />
+                          <path d="M16 3v4M8 3v4M3 11h18" strokeWidth="2" stroke="currentColor" />
+                        </svg>
+                      </span>
+                    </div>
+                    <AnimatePresence>
+                      {isCurrencyModalOpen && (
+                        <motion.div
+                          key="currency-modal-bg"
+                          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <motion.div
+                            key="currency-modal-panel"
+                            className="bg-white dark:bg-dark-700 rounded-lg shadow-lg p-6 w-full max-w-xs"
+                            initial={{ opacity: 0, scale: 0.95, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 40 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 28, duration: 0.3 }}
+                          >
+                            <h3 className="text-lg font-semibold mb-4">Select Currency</h3>
+                            <ul>
+                              {currencyList.map((cur) => (
+                                <li key={cur.code}>
+                                  <button
+                                    className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
+                                      }`}
+                                    onClick={() => {
+                                      setCurrency(cur);
+                                      setIsCurrencyModalOpen(false);
+                                    }}
+                                  >
+                                    {cur.name} ({cur.code})
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                            <button
+                              className="mt-4 w-full py-2 rounded button-primary"
+                              onClick={() => setIsCurrencyModalOpen(false)}
+                            >
+                              Cancel
+                            </button>
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
-                <button
-                  onClick={handleAddAsset}
-                  className="button-primary w-full"
-                  disabled={!selectedCryptoId || !assetAmount || parseFloat(assetAmount) <= 0}
-                >
-                  Add to Portfolio
-                </button>
-              </div>
+                  <button
+                    onClick={handleAddAsset}
+                    className="button-primary w-full"
+                    disabled={!selectedCryptoId || !assetAmount || parseFloat(assetAmount) <= 0}
+                  >
+                    Add to Portfolio
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Tabs Navigation */}
         <div className="glass-panel overflow-hidden">
@@ -670,15 +696,21 @@ const Wallet: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      Your portfolio is empty. Add some assets to get started.
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <img
+                      src="https://static.coingecko.com/s/gecko-rocket-5d99ad2cb0007dd97eb3497b2efdd049dca194e432f877d119f280360a1f88cd.png"
+                      alt="Cute wallet illustration"
+                      className="w-60 h-60 mb-6 select-none pointer-events-none"
+                      draggable="false"
+                    />
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                      What coins are you researching today?
                     </p>
                     <button
                       onClick={() => setIsAddingAsset(true)}
                       className="button-primary"
                     >
-                      Add Asset
+                      + Add Asset
                     </button>
                   </div>
                 )}
