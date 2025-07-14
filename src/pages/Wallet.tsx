@@ -38,48 +38,23 @@ const currencyList = [
 const Wallet: React.FC = () => {
   const { cryptoData } = useCryptoData();
   const [activeTab, setActiveTab] = useState('portfolio');
-  const [portfolio, setPortfolio] = useState<PortfolioAsset[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [portfolio, setPortfolio] = useState<PortfolioAsset[]>(() => {
+  const saved = sessionStorage.getItem('portfolio');
+  return saved ? JSON.parse(saved) : [];
+});
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+  const saved = sessionStorage.getItem('transactions');
+  return saved ? JSON.parse(saved) : [];
+});
   const [currency, setCurrency] = useState(currencyList[0]);
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   const [dateTime, setDateTime] = useState(new Date());
   const [showNotif, setShowNotif] = useState(false);
 
-
   // Initialize demo portfolio data
   useEffect(() => {
-    if (cryptoData.length > 0 && portfolio.length === 0) {
-      // Create a demo portfolio with the top 4 cryptocurrencies
-      const demoPortfolio: PortfolioAsset[] = [
-        // {
-        //   cryptoId: 'bitcoin',
-        //   amount: 0.75,
-        //   purchasePrice: 48000,
-        //   timestamp: Date.now() - 30 * 24 * 60 * 60 * 1000 // 30 days ago
-        // }
-        // {
-        //   cryptoId: 'ethereum',
-        //   amount: 5.2,
-        //   purchasePrice: 2500,
-        //   timestamp: Date.now() - 45 * 24 * 60 * 60 * 1000 // 45 days ago
-        // },
-        // {
-        //   cryptoId: 'solana',
-        //   amount: 25,
-        //   purchasePrice: 90,
-        //   timestamp: Date.now() - 15 * 24 * 60 * 60 * 1000 // 15 days ago
-        // },
-        // {
-        //   cryptoId: 'cardano',
-        //   amount: 1000,
-        //   purchasePrice: 0.32,
-        //   timestamp: Date.now() - 60 * 24 * 60 * 60 * 1000 // 60 days ago
-        // }
-      ];
-
-      setPortfolio(demoPortfolio);
-
-      // Create demo transactions
+      if (portfolio.length === 0 && cryptoData.length > 0 && transactions.length === 0) {
+      const demoPortfolio: PortfolioAsset[] = [];
       const demoTransactions: Transaction[] = [
         {
           id: '1',
@@ -130,10 +105,16 @@ const Wallet: React.FC = () => {
           timestamp: Date.now() - 5 * 24 * 60 * 60 * 1000
         }
       ];
-
+      setPortfolio(demoPortfolio);
       setTransactions(demoTransactions);
     }
-  }, [cryptoData, portfolio.length]);
+  }, [cryptoData]);
+
+  useEffect(() => {
+  sessionStorage.setItem('portfolio', JSON.stringify(portfolio));
+  sessionStorage.setItem('transactions', JSON.stringify(transactions));
+}, [portfolio, transactions]);
+
 
   // Calculate portfolio value and gains
   const calculatePortfolioStats = () => {
@@ -698,7 +679,7 @@ const Wallet: React.FC = () => {
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12">
                     <img
-                      src="https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/gekoungubg.webp"
+                      src="https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/coingeko.png"
                       className="w-60 h-60 mb-6 select-none pointer-events-none"
                       draggable="false"
                     />
