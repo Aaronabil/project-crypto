@@ -698,8 +698,7 @@ const Wallet: React.FC = () => {
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12">
                     <img
-                      src="https://static.coingecko.com/s/gecko-rocket-5d99ad2cb0007dd97eb3497b2efdd049dca194e432f877d119f280360a1f88cd.png"
-                      alt="Cute wallet illustration"
+                      src="https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/gekoungu.png"
                       className="w-60 h-60 mb-6 select-none pointer-events-none"
                       draggable="false"
                     />
