@@ -5,8 +5,9 @@ import {
   Plus, Send, ArrowDown, Settings, X, CheckCircle2Icon
 } from 'lucide-react';
 import { useCryptoData } from '../contexts/CryptoContext';
-import CryptoChart from '../components/ui/CryptoChart';
-// import { FaCaretDown } from "react-icons/fa";
+// import CryptoChart from '../components/ui/CryptoChart';
+import { MyPieChart } from '../components/ui/PieChartCrypto';
+// // import { FaCaretDown } from "react-icons/fa";
 import { Listbox } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import DatePicker from 'react-datepicker';
@@ -39,13 +40,13 @@ const Wallet: React.FC = () => {
   const { cryptoData } = useCryptoData();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [portfolio, setPortfolio] = useState<PortfolioAsset[]>(() => {
-  const saved = sessionStorage.getItem('portfolio');
-  return saved ? JSON.parse(saved) : [];
-});
+    const saved = sessionStorage.getItem('portfolio');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-  const saved = sessionStorage.getItem('transactions');
-  return saved ? JSON.parse(saved) : [];
-});
+    const saved = sessionStorage.getItem('transactions');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currency, setCurrency] = useState(currencyList[0]);
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   const [dateTime, setDateTime] = useState(new Date());
@@ -53,7 +54,7 @@ const Wallet: React.FC = () => {
 
   // Initialize demo portfolio data
   useEffect(() => {
-      if (portfolio.length === 0 && cryptoData.length > 0 && transactions.length === 0) {
+    if (portfolio.length === 0 && cryptoData.length > 0 && transactions.length === 0) {
       const demoPortfolio: PortfolioAsset[] = [];
       const demoTransactions: Transaction[] = [
         {
@@ -111,9 +112,9 @@ const Wallet: React.FC = () => {
   }, [cryptoData]);
 
   useEffect(() => {
-  sessionStorage.setItem('portfolio', JSON.stringify(portfolio));
-  sessionStorage.setItem('transactions', JSON.stringify(transactions));
-}, [portfolio, transactions]);
+    sessionStorage.setItem('portfolio', JSON.stringify(portfolio));
+    sessionStorage.setItem('transactions', JSON.stringify(transactions));
+  }, [portfolio, transactions]);
 
 
   // Calculate portfolio value and gains
@@ -317,7 +318,7 @@ const Wallet: React.FC = () => {
 
               {portfolioWithValues.length > 0 && portfolioWithValues[0].crypto && (
                 <div className="h-64">
-                  <CryptoChart cryptoData={portfolioWithValues[0].crypto} />
+                  <MyPieChart />
                 </div>
               )}
             </div>

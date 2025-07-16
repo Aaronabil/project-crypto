@@ -13,7 +13,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('theme');
     return (savedTheme as Theme) || 
-           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   });
 
   useEffect(() => {
@@ -21,6 +21,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
+    root.setAttribute("data-theme", theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
