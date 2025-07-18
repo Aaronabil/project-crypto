@@ -61,7 +61,8 @@
 
 @layer base {
   body {
-    @apply font-sans text-base antialiased;''
+    @apply font-sans text-base antialiased;
+    ''
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -70,23 +71,23 @@
   .glass-panel {
     @apply bg-white/10 dark:bg-dark-500/30 backdrop-blur-md border border-white/20 dark:border-dark-300/20 rounded-xl shadow-lg;
   }
-  
+
   .glass-card {
     @apply bg-white/40 dark:bg-dark-500/40 backdrop-blur-md border border-white/20 dark:border-dark-300/30 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg;
   }
-  
+
   .button-primary {
     @apply px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-all duration-300 font-medium shadow-md hover:shadow-primary-500/25;
   }
-  
+
   .button-secondary {
     @apply px-4 py-2 bg-white dark:bg-dark-600 hover:bg-gray-100 dark:hover:bg-dark-500 text-dark-800 dark:text-white rounded-lg transition-all duration-300 font-medium shadow-sm;
   }
-  
+
   .button-accent {
     @apply px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-all duration-300 font-medium shadow-md hover:shadow-accent-500/25;
   }
-  
+
   .input-field {
     @apply w-full px-4 py-2 bg-white/50 dark:bg-dark-600/50 backdrop-blur-sm border border-gray-200 dark:border-dark-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all duration-300;
   }
@@ -125,6 +126,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

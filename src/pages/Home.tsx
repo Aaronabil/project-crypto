@@ -419,7 +419,7 @@ const Home: React.FC = () => {
 
   // Top 4 cryptocurrencies
   const topCryptos = cryptoData.slice(0, 4);
-  
+
   // Staggered animation for children elements
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -430,7 +430,7 @@ const Home: React.FC = () => {
       }
     }
   };
-  
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -439,7 +439,7 @@ const Home: React.FC = () => {
       transition: { duration: 0.5 }
     }
   };
-  
+
   const features = [
     {
       icon: <TrendingUp className="text-primary-500" size={32} />,
@@ -462,38 +462,38 @@ const Home: React.FC = () => {
       description: "Receive instant notifications on price changes and market opportunities."
     }
   ];
-  
+
   return (
     <div>
       {/* Hero Section */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center mx-6">
-            <motion.div 
-              className="md:w-1/2 mb-8 md:mb-0 md:pr-8"
+            <motion.div
+              className="md:w-1/2 mb-8 md:mb-0 md:pr-8 z-10"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
+              <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 z-1">
                 Unlock the Future of <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500">Cryptocurrency</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6">
                 Real-time insights, analytics, and portfolio management for the modern crypto investor.
               </p>
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                <motion.button 
+                <motion.button
                   onClick={() => navigate('/dashboard')}
-                  className="button-primary flex items-center justify-center"
+                  className="button-primary flex items-center justify-center z-10"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <span>Explore Dashboard</span>
                   <ArrowRight size={16} className="ml-2" />
                 </motion.button>
-                <motion.button 
+                <motion.button
                   onClick={() => navigate('/wallet')}
-                  className="button-secondary flex items-center justify-center"
+                  className="button-secondary flex items-center justify-center  z-10"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -501,7 +501,7 @@ const Home: React.FC = () => {
                 </motion.button>
               </div>
             </motion.div>
-            
+
             <motion.div
               ref={globeContainerRef}
               className="w-full aspect-square max-w-[600px] mx-auto"
@@ -516,7 +516,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Trending Cryptocurrencies */}
       <section className="py-12 bg-gray-50/50 dark:bg-dark-800/50 backdrop-blur-sm">
         <div className="container mx-auto px-4">
@@ -534,7 +534,7 @@ const Home: React.FC = () => {
               Stay updated with the latest market movers and top cryptocurrencies
             </p>
           </motion.div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
               // Loading skeletons
@@ -564,15 +564,15 @@ const Home: React.FC = () => {
               ))
             )}
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className="text-center mt-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <button 
+            <button
               onClick={() => navigate('/dashboard')}
               className="button-secondary inline-flex items-center"
             >
@@ -582,7 +582,7 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Features */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -600,8 +600,8 @@ const Home: React.FC = () => {
               Powerful tools and insights to navigate the cryptocurrency markets with confidence
             </p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
             variants={containerVariants}
             initial="hidden"
@@ -625,11 +625,11 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-16 relative overflow-hidden">
         <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-          <Silk 
+          <Silk
             speed={5}
             scale={1}
             color="#6466f1"
@@ -638,20 +638,20 @@ const Home: React.FC = () => {
           />
         </div>
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
+          <motion.div
             className="max-w-3xl mx-auto text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-          > 
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          >
+            <h2 className="text-white/100 text-2xl md:text-3xl font-bold mb-4">
               Ready to start your cryptocurrency journey?
             </h2>
             <p className="text-white/80 text-lg mb-8">
               Join thousands of users who trust Cryptoctabil for real-time market insights and portfolio management.
             </p>
-            <motion.button 
+            <motion.button
               onClick={() => navigate('/dashboard')}
               className="px-6 py-3 bg-white text-primary-600 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center"
               whileHover={{ scale: 1.05 }}

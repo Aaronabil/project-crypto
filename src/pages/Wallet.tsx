@@ -213,13 +213,6 @@ const Wallet: React.FC = () => {
       amountToken = inputAmount / crypto.current_price;
     }
 
-    const newAsset: PortfolioAsset = {
-      cryptoId: selectedCryptoId,
-      amount: amountToken,
-      purchasePrice: crypto.current_price,
-      timestamp: dateTime.getTime(),
-    };
-
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       type: 'buy',
@@ -229,7 +222,36 @@ const Wallet: React.FC = () => {
       timestamp: dateTime.getTime(),
     };
 
-    setPortfolio([...portfolio, newAsset]);
+    // Check if asset already exists in portfolio
+    const existingAssetIndex = portfolio.findIndex(asset => asset.cryptoId === selectedCryptoId);
+
+    if (existingAssetIndex !== -1) {
+      // Update existing asset amount and purchasePrice (weighted average)
+      const existingAsset = portfolio[existingAssetIndex];
+      const totalAmount = existingAsset.amount + amountToken;
+      const weightedPurchasePrice = ((existingAsset.purchasePrice * existingAsset.amount) + (crypto.current_price * amountToken)) / totalAmount;
+
+      const updatedAsset: PortfolioAsset = {
+        ...existingAsset,
+        amount: totalAmount,
+        purchasePrice: weightedPurchasePrice,
+        timestamp: dateTime.getTime(),
+      };
+
+      const updatedPortfolio = [...portfolio];
+      updatedPortfolio[existingAssetIndex] = updatedAsset;
+      setPortfolio(updatedPortfolio);
+    } else {
+      // Add new asset
+      const newAsset: PortfolioAsset = {
+        cryptoId: selectedCryptoId,
+        amount: amountToken,
+        purchasePrice: crypto.current_price,
+        timestamp: dateTime.getTime(),
+      };
+      setPortfolio([...portfolio, newAsset]);
+    }
+
     setTransactions([newTransaction, ...transactions]);
     setIsAddingAsset(false);
     setSelectedCryptoId('');
@@ -318,7 +340,42 @@ const Wallet: React.FC = () => {
 
               {portfolioWithValues.length > 0 && portfolioWithValues[0].crypto && (
                 <div className="h-64">
-                  <MyPieChart />
+              {(() => {
+                const coinColorMap: Record<string, string> = {
+                  BTC: '#ff9900', 
+                  ETH: '#627EEA',
+                  XRP: '#2f2c56',
+                  USDT: '#26A17B',
+                  BNB: '#f3ba2f',
+                  SOL: '#9945FF',
+                  //USDC ABU
+                  DOGE: '#F0E4B1',
+                  //LIDO ABU
+                  ADA: '#0033ad',
+                  TRX: '#FF0000',
+                  HYPE: '#73E9E9',
+                  //WBTC ABU
+                  //WSTETH ABU
+                  XLM: '#14b6e7',
+                  SUI: '#4DA2FF',
+                  LINK: '#2A5ADA',
+                  HBAR: '#000',
+                  //BCH ABU
+                  //AVAX ABU
+                };
+                return (
+                  <MyPieChart
+                    data={portfolioWithValues.map((asset) => {
+                      const coin = asset.crypto?.symbol.toUpperCase() || 'N/A';
+                      return {
+                        coin,
+                        invest: asset.currentValue,
+                        fill: coinColorMap[coin] || '#888888', // default gray if not found
+                      };
+                    })}
+                  />
+                );
+              })()}
                 </div>
               )}
             </div>
@@ -367,7 +424,7 @@ const Wallet: React.FC = () => {
                             <p className="text-sm font-semibold">${asset.currentValue.toLocaleString()}</p>
                           </div>
                           <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                            <p>{asset.amount} {asset.crypto.symbol.toUpperCase()}</p>
+                            <p>{asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}</p>
                             <p className={asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'}>
                               {asset.profitLossPercentage >= 0 ? '+' : ''}{asset.profitLossPercentage.toFixed(2)}%
                             </p>
@@ -385,14 +442,14 @@ const Wallet: React.FC = () => {
         {/* Add Asset Modal */}
         <AnimatePresence>
           {isAddingAsset && (
-            <motion.div
-              key="modal-bg"
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-            >
+              <motion.div
+                key="modal-bg"
+                className="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
               <motion.div
                 key="modal-panel"
                 className="glass-panel p-6 w-full max-w-md rounded-xl"
@@ -496,7 +553,9 @@ const Wallet: React.FC = () => {
                     <div className="relative w-full">
                       <DatePicker
                         selected={dateTime}
-                        onChange={setDateTime}
+                        onChange={(date) => {
+                          if (date) setDateTime(date);
+                        }}
                         timeFormat="hh:mm aa"
                         timeIntervals={5}
                         dateFormat="d MMMM yyyy"
@@ -536,7 +595,7 @@ const Wallet: React.FC = () => {
                               {currencyList.map((cur) => (
                                 <li key={cur.code}>
                                   <button
-                                    className={`w-full text-left px-3 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900/30 ${currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
+                                    className={`w-full text-left px-3 py-2 rounded  hover:bg-primary-100 dark:hover:bg-primary-900/30 ${currency.code === cur.code ? 'font-bold bg-primary-50 dark:bg-primary-900/20' : ''
                                       }`}
                                     onClick={() => {
                                       setCurrency(cur);
@@ -628,7 +687,7 @@ const Wallet: React.FC = () => {
                               <div className="text-right">
                                 <p className="font-semibold">${asset.currentValue.toLocaleString()}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  {asset.amount} {asset.crypto.symbol.toUpperCase()}
+                                  {asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}
                                 </p>
                               </div>
                             </div>
@@ -684,7 +743,7 @@ const Wallet: React.FC = () => {
                       className="w-60 h-60 mb-6 select-none pointer-events-none"
                       draggable="false"
                     />
-                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    <p className="text-xl text-center font-bold text-gray-900 dark:text-white mb-6">
                       What coins are you researching today?
                     </p>
                     <button
@@ -743,7 +802,7 @@ const Wallet: React.FC = () => {
                                 </div>
                               </td>
                               <td className="py-3 px-2 text-right">
-                                {asset.amount.toLocaleString()} {asset.crypto.symbol.toUpperCase()}
+                                {asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}
                               </td>
                               <td className="py-3 px-2 text-right">
                                 ${asset.currentPrice.toLocaleString()}
@@ -773,15 +832,20 @@ const Wallet: React.FC = () => {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      Your asset list is empty. Add some assets to get started.
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <img
+                      src="https://raw.githubusercontent.com/Aaronabil/project-crypto/main/public/images/coingeko.png"
+                      className="w-60 h-60 mb-6 select-none pointer-events-none"
+                      draggable="false"
+                    />
+                    <p className="text-xl text-center font-bold text-gray-900 dark:text-white mb-6">
+                      What coins are you researching today?
                     </p>
                     <button
                       onClick={() => setIsAddingAsset(true)}
                       className="button-primary"
                     >
-                      Add Asset
+                      + Add Asset
                     </button>
                   </div>
                 )}

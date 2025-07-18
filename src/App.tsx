@@ -5,7 +5,8 @@ import { AnimatePresence } from 'framer-motion';
 
 import { ThemeProvider } from './contexts/ThemeContext';
 import { CryptoDataProvider } from './contexts/CryptoContext';
-import ParticleBackground from './components/backgrounds/ParticleBackground';
+// import ParticleBackground from './components/backgrounds/ParticleBackground';
+import { BackgroundBeams } from './components/backgrounds/Beams';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -28,8 +29,9 @@ function App() {
     <ThemeProvider>
       <CryptoDataProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-            <ParticleBackground />
+          <div className="relative min-h-screen bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+            {/* <ParticleBackground /> */}
+            <BackgroundBeams />
             <Layout>
               <AnimatePresence mode="wait">
                 <Routes>

@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
             
             <motion.button
               onClick={() => refreshData()}
-              className="button-secondary flex items-center"
+              className="button-secondary flex items-center z-10"
               whileTap={{ scale: 0.95 }}
             >
               <RefreshCw size={16} className="mr-2" />

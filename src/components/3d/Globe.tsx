@@ -16,7 +16,7 @@ declare module "@react-three/fiber" {
 extend({ ThreeGlobe: ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
-const aspect = 1.2;
+
 const cameraZ = 300;
 
 type Position = {
@@ -58,6 +58,8 @@ export type GlobeConfig = {
 interface WorldProps {
   globeConfig: GlobeConfig;
   data: Position[];
+  width?: number;
+  height?: number;
 }
 
 let numbersOfRings = [0];
@@ -234,25 +236,42 @@ export function Globe({ globeConfig, data }: WorldProps) {
   return <group ref={groupRef} />;
 }
 
-export function WebGLRendererConfig() {
-  const { gl, size } = useThree();
+export function WebGLRendererConfig({ width = 0, height = 0 }) {
+  const { gl } = useThree();
 
   useEffect(() => {
     gl.setPixelRatio(window.devicePixelRatio);
-    gl.setSize(size.width, size.height);
+    if (width && height) {
+      gl.setSize(width, height);
+    }
     gl.setClearColor(0xffaaff, 0);
-  }, []);
+  }, [width, height, gl]);
 
   return null;
 }
 
 export function World(props: WorldProps) {
-  const { globeConfig } = props;
+  const { globeConfig, width = 0, height = 0 } = props;
+  const aspect = width && height ? width / height : 1.2;
   const scene = new Scene();
   scene.fog = new Fog(0xffffff, 400, 2000);
+
+  // Create camera with dynamic aspect ratio
+  const cameraRef = useRef<PerspectiveCamera>(
+    new PerspectiveCamera(50, aspect, 180, 1800),
+  );
+
+  // Update camera aspect ratio on width/height change
+  useEffect(() => {
+    if (cameraRef.current && width && height) {
+      cameraRef.current.aspect = aspect;
+      cameraRef.current.updateProjectionMatrix();
+    }
+  }, [aspect, width, height]);
+
   return (
-    <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
-      <WebGLRendererConfig />
+    <Canvas scene={scene} camera={cameraRef.current}>
+      <WebGLRendererConfig width={width} height={height} />
       <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
       <directionalLight
         color={globeConfig.directionalLeftLight}
@@ -273,8 +292,8 @@ export function World(props: WorldProps) {
         enableZoom={false}
         minDistance={cameraZ}
         maxDistance={cameraZ}
-        autoRotateSpeed={1}
-        autoRotate={true}
+        autoRotateSpeed={globeConfig.autoRotateSpeed || 1}
+        autoRotate={globeConfig.autoRotate || true}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
       />

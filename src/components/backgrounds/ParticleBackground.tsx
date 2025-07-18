@@ -164,7 +164,7 @@ const ParticleBackground: React.FC = () => {
     <canvas 
       ref={canvasRef} 
       className="particles-container"
-      style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }}
+      style={{ position: 'fixed', top: 0, left: 0, zIndex: 0 }}
     />
   );
 };
