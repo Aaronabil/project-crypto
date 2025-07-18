@@ -29,6 +29,12 @@ interface Transaction {
   timestamp: number;
 }
 
+interface ReadOnlyInputProps {
+  value?: string;
+  onClick?: () => void;
+  className?: string;
+}
+
 const currencyList = [
   { code: 'USD', name: 'US Dollar' },
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -122,12 +128,23 @@ const Wallet: React.FC = () => {
     let totalValue = 0;
     let totalInvestment = 0;
 
-    // Map portfolio assets to include current prices and values
+    // Calculate totalSpent per cryptoId from transactions
+    const totalSpentMap: Record<string, number> = {};
+    transactions.forEach(tx => {
+      if (tx.type === 'buy') {
+        totalSpentMap[tx.cryptoId] = (totalSpentMap[tx.cryptoId] || 0) + tx.amount * tx.price;
+      } else if (tx.type === 'sell') {
+        totalSpentMap[tx.cryptoId] = (totalSpentMap[tx.cryptoId] || 0) - tx.amount * tx.price;
+      }
+    });
+
+    // Map portfolio assets to include current prices, values, and totalSpent
     const portfolioWithValues = portfolio.map(asset => {
       const crypto = cryptoData.find(c => c.id === asset.cryptoId);
       const currentPrice = crypto ? crypto.current_price : 0;
       const currentValue = asset.amount * currentPrice;
       const investmentValue = asset.amount * asset.purchasePrice;
+      const totalSpent = totalSpentMap[asset.cryptoId] || 0;
 
       totalValue += currentValue;
       totalInvestment += investmentValue;
@@ -144,7 +161,8 @@ const Wallet: React.FC = () => {
         currentValue,
         investmentValue,
         profitLoss,
-        profitLossPercentage
+        profitLossPercentage,
+        totalSpent,
       };
     });
 
@@ -261,7 +279,7 @@ const Wallet: React.FC = () => {
   };
 
   // Custom read-only input for DatePicker
-  const ReadOnlyInput = forwardRef(({ value, onClick, className }, ref) => (
+  const ReadOnlyInput = forwardRef<HTMLInputElement, ReadOnlyInputProps>(({ value, onClick, className }, ref) => (
     <input
       type="text"
       readOnly
@@ -340,42 +358,45 @@ const Wallet: React.FC = () => {
 
               {portfolioWithValues.length > 0 && portfolioWithValues[0].crypto && (
                 <div className="h-64">
-              {(() => {
-                const coinColorMap: Record<string, string> = {
-                  BTC: '#ff9900', 
-                  ETH: '#627EEA',
-                  XRP: '#2f2c56',
-                  USDT: '#26A17B',
-                  BNB: '#f3ba2f',
-                  SOL: '#9945FF',
-                  //USDC ABU
-                  DOGE: '#F0E4B1',
-                  //LIDO ABU
-                  ADA: '#0033ad',
-                  TRX: '#FF0000',
-                  HYPE: '#73E9E9',
-                  //WBTC ABU
-                  //WSTETH ABU
-                  XLM: '#14b6e7',
-                  SUI: '#4DA2FF',
-                  LINK: '#2A5ADA',
-                  HBAR: '#000',
-                  //BCH ABU
-                  //AVAX ABU
-                };
-                return (
-                  <MyPieChart
-                    data={portfolioWithValues.map((asset) => {
-                      const coin = asset.crypto?.symbol.toUpperCase() || 'N/A';
-                      return {
-                        coin,
-                        invest: asset.currentValue,
-                        fill: coinColorMap[coin] || '#888888', // default gray if not found
-                      };
-                    })}
-                  />
-                );
-              })()}
+                  {(() => {
+                    const coinColorMap: Record<string, string> = {
+                      BTC: '#ff9900',
+                      ETH: '#627EEA',
+                      XRP: '#2f2c56',
+                      USDT: '#26A17B',
+                      BNB: '#f3ba2f',
+                      SOL: '#9945FF',
+                      //USDC ABU
+                      DOGE: '#F0E4B1',
+                      //LIDO ABU
+                      ADA: '#0033ad',
+                      TRX: '#FF0000',
+                      HYPE: '#73E9E9',
+                      //WBTC ABU
+                      //WSTETH ABU
+                      XLM: '#14b6e7',
+                      SUI: '#4DA2FF',
+                      LINK: '#2A5ADA',
+                      HBAR: '#000',
+                      //BCH ABU
+                      //AVAX ABU
+                    };
+
+                    
+
+                    return (
+                      <MyPieChart
+                        data={portfolioWithValues.map((asset) => {
+                          const coin = asset.crypto?.symbol.toUpperCase() || 'N/A';
+                          return {
+                            coin,
+                            invest: asset.currentValue,
+                            fill: coinColorMap[coin] || '#888888', // default gray if not found
+                          };
+                        })}
+                      />
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -409,31 +430,45 @@ const Wallet: React.FC = () => {
 
               <h3 className="font-semibold mb-3">Top Assets</h3>
               <div className="space-y-3">
-                {portfolioWithValues.slice(0, 3).map(asset => (
-                  <div key={asset.cryptoId} className="p-3 bg-white/40 dark:bg-dark-600/40 rounded-lg flex items-center">
-                    {asset.crypto && (
-                      <>
-                        <img
-                          src={asset.crypto.image}
-                          alt={asset.crypto.name}
-                          className="w-8 h-8 rounded-full mr-3"
-                        />
-                        <div className="flex-1">
-                          <div className="flex justify-between items-center">
-                            <p className="font-medium">{asset.crypto.name}</p>
-                            <p className="text-sm font-semibold">${asset.currentValue.toLocaleString()}</p>
-                          </div>
-                          <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                            <p>{asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}</p>
-                            <p className={asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'}>
-                              {asset.profitLossPercentage >= 0 ? '+' : ''}{asset.profitLossPercentage.toFixed(2)}%
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
+                <AnimatePresence>
+                  {portfolioWithValues
+                    .slice() // biar nggak mutasi array aslinya
+                    .sort((a, b) => (b.amount * b.purchasePrice) - (a.amount * a.purchasePrice))
+                    .slice(0, 3)
+                    .map(asset => (
+                      <motion.div
+                        key={asset.cryptoId}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className="p-3 bg-white/40 dark:bg-dark-600/40 rounded-lg flex items-center"
+                      >
+                        {asset.crypto && (
+                          <>
+                            <img
+                              src={asset.crypto.image}
+                              alt={asset.crypto.name}
+                              className="w-8 h-8 rounded-full mr-3"
+                            />
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center">
+                                <p className="font-medium">{asset.crypto.name}</p>
+                                <p className="text-sm font-semibold">${asset.currentValue.toLocaleString()}</p>
+                              </div>
+                              <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                                <p>{asset.amount.toFixed(8)} {asset.crypto.symbol.toUpperCase()}</p>
+                                <p className={asset.profitLossPercentage >= 0 ? 'text-success-500' : 'text-error-500'}>
+                                  {asset.profitLossPercentage >= 0 ? '+' : ''}{asset.profitLossPercentage.toFixed(2)}%
+                                </p>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </motion.div>
+                    ))}
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -442,14 +477,14 @@ const Wallet: React.FC = () => {
         {/* Add Asset Modal */}
         <AnimatePresence>
           {isAddingAsset && (
-              <motion.div
-                key="modal-bg"
-                className="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-              >
+            <motion.div
+              key="modal-bg"
+              className="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
               <motion.div
                 key="modal-panel"
                 className="glass-panel p-6 w-full max-w-md rounded-xl"
@@ -687,7 +722,7 @@ const Wallet: React.FC = () => {
                               <div className="text-right">
                                 <p className="font-semibold">${asset.currentValue.toLocaleString()}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  {asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}
+                                  {asset.amount.toFixed(8)} {asset.crypto.symbol.toUpperCase()}
                                 </p>
                               </div>
                             </div>
@@ -802,7 +837,7 @@ const Wallet: React.FC = () => {
                                 </div>
                               </td>
                               <td className="py-3 px-2 text-right">
-                                {asset.amount.toFixed(10)} {asset.crypto.symbol.toUpperCase()}
+                                {asset.amount.toFixed(8)} {asset.crypto.symbol.toUpperCase()}
                               </td>
                               <td className="py-3 px-2 text-right">
                                 ${asset.currentPrice.toLocaleString()}
@@ -901,7 +936,7 @@ const Wallet: React.FC = () => {
                             <div className="text-right">
                               <p className="font-medium">
                                 {tx.type === 'buy' ? '+' : tx.type === 'sell' ? '-' : ''}
-                                {tx.amount} {crypto?.symbol.toUpperCase()}
+                                {tx.amount.toFixed(8)} {crypto?.symbol.toUpperCase()}
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">
                                 Price: ${tx.price.toLocaleString()}
